@@ -20,7 +20,7 @@ from Inception import Model as inception
 
 def parse_args():
     
-    parser = argparse.ArgumentParser(description='text classification model zoo')
+    parser = argparse.ArgumentParser(description='short text classification model zoo')
 
     parser.add_argument('-m',
                         dest='model',
@@ -186,9 +186,10 @@ Train_loss: %.4f  Dev_loss: %.4f
 Train_acc: %.4f  Dev_acc: %.4f
 ------------------------------------''' % (epoch, time_cost, train_loss, dev_loss, train_acc, dev_acc))
 
-if args.save:
-    print(args)
-    torch.save(model.state_dict(), '../model/%s_bs%d_lr%g_epoch%d.pkl'
-            % (args.model, args.batch_size, args.learning_rate, i + 1))
+    if args.save:
+        torch.save(model.state_dict(), '../model/%s_bs%d_lr%g_epoch%d.pkl'
+                % (args.model, args.batch_size, args.learning_rate, i + 1))
+    
 
+print(args)
 print(classification_report(dev_true, dev_pred))
