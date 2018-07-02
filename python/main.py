@@ -17,98 +17,29 @@ from TextCNN import Model as textcnn
 from TextRCNN import Model as textrcnn
 from Inception import Model as inception
 
-
-def parse_args():
-    
-    parser = argparse.ArgumentParser(description='short text classification model zoo')
-
-    parser.add_argument('-m',
-                        dest='model',
-                        help='model name',
-                        default='swem_c', type=str)
-
-    parser.add_argument('-data_path',
-                        help='location of the data',
-                        default='../data/data.csv', type=str)
-
-    parser.add_argument('-rebuild',
-                        dest='rebuild',
-                        help='whether to rebulid data',
-                        default=False, type=ast.literal_eval)
-
-    parser.add_argument('-input_col',
-                        help='col name of input data',
-                        default='title', type=str)
-
-    parser.add_argument('-target_col',
-                        help='col name of target data',
-                        default='target', type=str)
-
-    parser.add_argument('-train_size',
-                        help='the proportion of data used in model training',
-                        default=0.7, type=float)
-
-    parser.add_argument('-random_seed',
-                        help='random_seed',
-                        default=42, type=int)
-
-    parser.add_argument('-save',
-                        help='whether to save model at every epoch',
-                        default=False, type=ast.literal_eval)
-    
-    # model hyper-parameters
-    parser.add_argument('-sl',
-                        dest='seq_length',
-                        help='sequence length, default',
-                        default=None,
-                        type=int)
-
-    parser.add_argument('-ed',
-                        dest='embed_dim',
-                        help='dimension of embedding',
-                        default=300, type=int)
-
-    parser.add_argument('-ws',
-                        dest='window_size',
-                        help='window size of hier avg operation',
-                        default=5, type=int)
-
-    parser.add_argument('-oc',
-                        dest='out_channels',
-                        help='out channels of conv layers',
-                        default=512, type=int)
-
-    parser.add_argument('-ks',
-                        dest='kernel_sizes',
-                        help='kernel sizes of conv layers',
-                        default=[2, 3, 4, 5, 6, 7], type=ast.literal_eval)
-
-    parser.add_argument('-hs',
-                        dest='hidden_state',
-                        help='number of units of hidden_state',
-                        default=512, type=float)
-
-    parser.add_argument('-lr',
-                        dest='learning_rate',
-                        help='learning rate',
-                        default=1e-3, type=float)
-
-    parser.add_argument('-bs',
-                        dest='batch_size',
-                        help='size of mini batch',
-                        default=512, type=int)
-
-    parser.add_argument('-ep',
-                        dest='epoch_num',
-                        help='number of epoch',
-                        default=5, type=int)
-
-    args = parser.parse_args()
-    
-    return args
+parser = argparse.ArgumentParser(description='short text classification model zoo')
+parser.add_argument('-m', type=str, default='swem_c', dest='model', help='model name')
+parser.add_argument('-data_path', type=str, default='../data/data.csv', help='location of the data')
+parser.add_argument('-rebuild', type=ast.literal_eval, default=False, help='whether to rebulid data')
+parser.add_argument('-input_col', type=str, default='title', help='col name of input data')
+parser.add_argument('-target_col', type=str, default='target', help='col name of target data')
+parser.add_argument('-train_size', type=float, default=0.7, help='the proportion of data used in model training')
+parser.add_argument('-random_seed', type=int, default=42, help='random_seed')
+parser.add_argument('-save', type=ast.literal_eval, default=False, help='whether to save model at every epoch')
+# model hyper-parameters
+parser.add_argument('-sl', type=int, default=None, dest='seq_length', help='sequence length, default')
+parser.add_argument('-ed', type=int, default=300, dest='embed_dim', help='dimension of embedding')
+parser.add_argument('-ws', type=int, default=5, dest='window_size', help='window size of hier avg operation')
+parser.add_argument('-oc', dest='out_channels', help='out channels of conv layers', default=512, type=int)
+parser.add_argument('-ks', type=ast.literal_eval, default=[2, 3, 4, 5, 6, 7], dest='kernel_sizes',
+                    help='kernel sizes of conv layers')
+parser.add_argument('-hs', type=float, default=512, dest='hidden_state', help='number of units of hidden_state')
+parser.add_argument('-lr', type=float, default=1e-3, dest='learning_rate', help='learning rate')
+parser.add_argument('-bs', type=int, default=512, dest='batch_size', help='size of mini batch')
+parser.add_argument('-ep', type=int, default=5, dest='epoch_num', help='number of epoch')
+args = parser.parse_args()
 
 
-args = parse_args()
 torch.manual_seed(args.random_seed)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 model_zoo = {'swem_c': swem_c, 'swem_h': swem_h, 'textcnn': textcnn, 'textrcnn': textrcnn, 'inception': inception}
