@@ -17,6 +17,7 @@ from TextCNN import Model as textcnn
 from TextRCNN import Model as textrcnn
 from Inception import Model as inception
 
+
 parser = argparse.ArgumentParser(description='short text classification model zoo')
 parser.add_argument('-m', type=str, default='swem_c', dest='model', help='model name')
 parser.add_argument('-data_path', type=str, default='../data/data.csv', help='location of the data')
@@ -47,7 +48,7 @@ model_zoo = {'swem_c': swem_c, 'swem_h': swem_h, 'textcnn': textcnn, 'textrcnn':
 d_train, d_dev, _, tokenizer = utils.get_data(args.data_path, args.input_col,
                                               args.rebuild, args.train_size, args.random_seed)
 
-train_size = d_train.shape[0]
+train_rows = d_train.shape[0]
 vocab = tokenizer.keys()
 vocab_size = len(vocab) + 1
 
@@ -69,20 +70,18 @@ optimizer = torch.optim.Adam(model.parameters(), args.learning_rate)
 
 print("""Device: %s
 Model: %s
-Train size: %d""" % (device, args.model, train_size))
-
+Train size: %d""" % (device, args.model, train_rows))
 
 for i in range(args.epoch_num):
-    
+
     t1 = time.time()
-    
+
     y_pred = []
     y_true = []
     epoch_loss = 0
 
     model.train()
     for (input_, mask, target) in trainloader:
-
         input_ = input_.to(device)
         target = target.view(-1).to(device)
         mask = mask.to(device)
@@ -99,16 +98,16 @@ for i in range(args.epoch_num):
 
         loss.backward()
         optimizer.step()
-        
+
     t2 = time.time()
-    
+
     model.eval()
     dev_true, dev_pred, dev_loss = utils.eval(model, devloader, lossfunc)
     dev_acc = accuracy_score(dev_true, dev_pred)
 
     epoch = (i + 1)
     time_cost = (t2 - t1)
-    train_loss = epoch_loss / train_size
+    train_loss = epoch_loss / train_rows
     train_acc = accuracy_score(y_true, y_pred)
 
     print('''------------------------------------
@@ -119,8 +118,7 @@ Train_acc: %.4f  Dev_acc: %.4f
 
     if args.save:
         torch.save(model.state_dict(), '../model/%s_bs%d_lr%g_epoch%d.pkl'
-                % (args.model, args.batch_size, args.learning_rate, i + 1))
-    
+                   % (args.model, args.batch_size, args.learning_rate, i + 1))
 
 print(args)
 print(classification_report(dev_true, dev_pred))
