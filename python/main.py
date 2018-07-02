@@ -17,6 +17,7 @@ from TextCNN import Model as textcnn
 from TextRCNN import Model as textrcnn
 from Inception import Model as inception
 
+
 def parse_args():
     
     parser = argparse.ArgumentParser(description='text classification model zoo')
@@ -24,7 +25,7 @@ def parse_args():
     parser.add_argument('-m',
                         dest='model',
                         help='model name',
-                        default='swem_h', type=str)
+                        default='swem_c', type=str)
 
     parser.add_argument('-data_path',
                         help='location of the data',
@@ -55,7 +56,7 @@ def parse_args():
                         help='whether to save model at every epoch',
                         default=False, type=ast.literal_eval)
     
-    #model hyper-parameters
+    # model hyper-parameters
     parser.add_argument('-sl',
                         dest='seq_length',
                         help='sequence length, default',
@@ -72,7 +73,6 @@ def parse_args():
                         help='window size of hier avg operation',
                         default=5, type=int)
 
-    
     parser.add_argument('-oc',
                         dest='out_channels',
                         help='out channels of conv layers',
