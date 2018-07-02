@@ -34,7 +34,7 @@ parser.add_argument('-ws', type=int, default=5, dest='window_size', help='window
 parser.add_argument('-oc', dest='out_channels', help='out channels of conv layers', default=512, type=int)
 parser.add_argument('-ks', type=ast.literal_eval, default=[2, 3, 4, 5, 6, 7], dest='kernel_sizes',
                     help='kernel sizes of conv layers')
-parser.add_argument('-hs', type=float, default=512, dest='hidden_state', help='number of units of hidden_state')
+parser.add_argument('-hs', type=int, default=512, dest='hidden_state', help='number of units of hidden_state')
 parser.add_argument('-lr', type=float, default=1e-3, dest='learning_rate', help='learning rate')
 parser.add_argument('-bs', type=int, default=512, dest='batch_size', help='size of mini batch')
 parser.add_argument('-ep', type=int, default=5, dest='epoch_num', help='number of epoch')
@@ -58,10 +58,10 @@ if args.seq_length is None:
     args.seq_length = d_train[args.input_col].apply(len).max()
 
 trainbulider = DataBuilder(d_train, args.input_col, args.target_col, tokenizer, args.seq_length)
-trainloader = DataLoader(trainbulider, args.batch_size, shuffle=False)
+trainloader = DataLoader(trainbulider, args.batch_size, shuffle=True)
 
 devbulider = DataBuilder(d_dev, args.input_col, args.target_col, tokenizer, args.seq_length)
-devloader = DataLoader(devbulider, args.batch_size, shuffle=False)
+devloader = DataLoader(devbulider, args.batch_size, shuffle=True)
 
 model = model_zoo[args.model](args).to(device)
 
