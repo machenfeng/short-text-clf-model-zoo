@@ -21,35 +21,34 @@ class Model(nn.Module):
                                 nn.BatchNorm1d(num_features=hs), 
                                 nn.ReLU(), 
                                 nn.Linear(hs, nc))
-        
-    
+
     def conv_layer(self, oc, k, ed, sl):
         
-        #(bs, 1, sl, ed) -> (bs, oc, sl - k + 1, 1)
+        # (bs, 1, sl, ed) -> (bs, oc, sl - k + 1, 1)
         conv = nn.Conv2d(in_channels=1, out_channels=oc, kernel_size=(k, ed))
         
         relu = nn.ReLU()
         
-        #(bs, oc, sl - k + 1, 1) -> (bs, oc, 1, 1)
+        # (bs, oc, sl - k + 1, 1) -> (bs, oc, 1, 1)
         maxpool = nn.MaxPool2d(kernel_size=(sl - k + 1, 1))
         
         return nn.Sequential(conv, relu, maxpool)
     
     def forward(self, x, _):
         
-        #（bs, sl） -> (bs, sl, ed)
+        # (bs, sl) -> (bs, sl, ed)
         out = self.embed(x)
         
-        #(bs, sl, ed) -> (bs, 1, sl, ed)
+        # (bs, sl, ed) -> (bs, 1, sl, ed)
         out = out.unsqueeze(1)
-        #(bs, 1, sl, ed) -> [(bs, oc, 1, 1)] * len(ks)
+        # (bs, 1, sl, ed) -> [(bs, oc, 1, 1)] * len(ks)
         out = [conv(out) for conv in self.convs]
 
-        #[(bs, oc, 1, 1)] * len(ks) -> (bs, oc * len(ks))
+        # [(bs, oc, 1, 1)] * len(ks) -> (bs, oc * len(ks))
         out = torch.cat(out, 1)
         out = out.view(out.size(0), -1)
 
-        #(bs, oc * len(ks)) -> (bs, nc)
+        # (bs, oc * len(ks)) -> (bs, nc)
         logits = self.fc(out)
 
         return logits
