@@ -94,9 +94,9 @@ def dict_build(cols, use_char=True, save_dir=None):
 
 def get_data(data_path, input_col, rebulid=False, train_size=0.7, random_seed=42):
 
-    d = pd.read_csv(data_path)
 
     if rebulid:
+        d = pd.read_csv(data_path)
         d_train, d_dev = train_test_split(d, test_size=1 - train_size, random_state=random_seed)
         d_dev, d_test = train_test_split(d_dev, test_size=0.5, random_state=random_seed)
 
@@ -110,6 +110,7 @@ def get_data(data_path, input_col, rebulid=False, train_size=0.7, random_seed=42
         d_train = pd.read_csv('../data/train.csv')
         d_dev = pd.read_csv('../data/dev.csv')
         d_test = pd.read_csv('../data/test.csv')
+
         char2idx = open('../resource/char2idx.pkl', 'rb')
         char2idx = pickle.load(char2idx)
 
@@ -122,7 +123,8 @@ def eval(model, dataloader, lossfunc):
     y_pred = []
     y_true = []
     total_loss = 0
-    count = 0
+    batch_count = len(dataloader)
+
     for (sentence, mask, label) in dataloader:
 
         sentence = Variable(sentence).to(device)
@@ -132,10 +134,9 @@ def eval(model, dataloader, lossfunc):
         logits = model(sentence, mask)
         predict = logits.max(1)[1]
         loss = lossfunc(logits, label)
-        total_loss += loss.item()
-        count += 1        
+        total_loss += loss.item()     
 
         y_pred += predict.tolist()
         y_true += label.tolist()
     
-    return y_true, y_pred, total_loss / count
+    return y_true, y_pred, total_loss / batch_count
