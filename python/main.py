@@ -79,6 +79,7 @@ for i in range(args.epoch_num):
     y_pred = []
     y_true = []
     epoch_loss = 0
+    batch_count = len(trainloader)
 
     model.train()
     for (input_, mask, target) in trainloader:
@@ -107,7 +108,7 @@ for i in range(args.epoch_num):
 
     epoch = (i + 1)
     time_cost = (t2 - t1)
-    train_loss = epoch_loss / train_rows
+    train_loss = epoch_loss / batch_count
     train_acc = accuracy_score(y_true, y_pred)
 
     print('''------------------------------------
